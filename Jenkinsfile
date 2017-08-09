@@ -8,6 +8,8 @@ pipeline {
   stages {
     stage('setup') {
       steps {
+        sh 'echo ${WORKSPACE}'
+        echo 'workspace: ${WORKSPACE}'        
         sh 'mkdir -p ${CONTEXT}'
         sh 'mkdir -p ${MODULES}'
       }
