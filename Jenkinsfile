@@ -19,8 +19,6 @@ pipeline {
         sh 'mkdir -p ${MODULES}'         
       }
     }
-  }  
-  stages {
     stage('clone repos') {
       steps {
         parallel(
@@ -35,8 +33,6 @@ pipeline {
         )
       }
     }
-  }
-  stages {
     stage('deliver') {
       steps {
         sh 'mv ${MODULES}/* ${CONTEXT}/${MODULES}/'
