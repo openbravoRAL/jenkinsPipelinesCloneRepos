@@ -9,9 +9,9 @@ pipeline {
     stage('clone repos') {
       steps {
         echo 'some tests running'
-        sh 'sleep 1'
+        sh '''#!/usr/bin/env python
+print ('hello from python')'''
       }
     }
   }
 }
-
