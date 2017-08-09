@@ -5,18 +5,11 @@ pipeline {
     }
     
   }
-  environment {
-    WORKSPACE = pwd()
-    CONTEXT = 'context'
-    MODULES = 'modules'
-    REPO_ERP = 'https://code.openbravo.com/erp/devel/pi'
-    REPO_MODULES = 'https://code.openbravo.com/erp/mods/org.openbravo.util.db'
-  }
   stages {
     stage('setup') {
       steps {
         sh 'mkdir -p ${CONTEXT}'
-        sh 'mkdir -p ${MODULES}'         
+        sh 'mkdir -p ${MODULES}'
       }
     }
     stage('clone repos') {
@@ -24,11 +17,23 @@ pipeline {
         parallel(
           "erp": {
             echo 'cloning ERP'
-            sh 'hg clone ${REPO_ERP}'
+            sh '''if [ -d "${CONTEXT}" ]; then
+  hg clone ${REPO_ERP}
+else
+  hg update -R ${CONTEXT}
+fi
+'''
+            
           },
           "modules": {
             echo 'cloning modules'
-            sh 'hg clone ${REPO_MODULES}'
+            sh '''if [ -d "${CONTEXT}/${MODULES}/org.openbravo.util.db" ]; then
+  hg clone ${REPO_MODULES} ${CONTEXT}/${MODULES}/org.openbravo.util.db
+else
+  hg update -R ${CONTEXT}/modules/org.openbravo.util.db
+fi
+'''
+            
           }
         )
       }
@@ -38,5 +43,12 @@ pipeline {
         sh 'mv ${MODULES}/* ${CONTEXT}/${MODULES}/'
       }
     }
-  }  
+  }
+  environment {
+    WORKSPACE = pwd()
+    CONTEXT = 'context'
+    MODULES = 'modules'
+    REPO_ERP = 'https://code.openbravo.com/erp/devel/pi'
+    REPO_MODULES = 'https://code.openbravo.com/erp/mods/org.openbravo.util.db'
+  }
 }
